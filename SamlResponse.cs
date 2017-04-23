@@ -1,7 +1,17 @@
+using System;
+using System.Text;
+using System.Xml;
+using System.IO;
+using System.Collection;
+using System.Collection.Generic;
+using System.Collection.ObjectModel;
+using System.Security.Claims;
+using System.Security.Cryptograhy;
 using System.Security.Cryptograhy.Xml;
 using System.Security.Cryptograhy.X509Certificates;
-using System.Collection.Generic;
-using System;
+using System.Deployment.Internal.CodeSigning;
+using System.IdentityModel.Tokens;
+using System.IdentityModel.Selectors;
 
 namespace PeterKressJunior.Saml 
 {
@@ -125,6 +135,27 @@ namespace PeterKressJunior.Saml
             return signedXml.CheckSignature(certificate, false);
         }
 
+        private
+        
+        internal bool Validate(out UserAttibutes userAttributes)
+        {
+            userAttributes = new UserAttributes();
+            bool isValid = false;
+            
+            if (CheckSignatures())
+            {
+                ReadOnlyCollection<ClaimsIdentity> claimsIdentities = ValidateAssertion(AssertionXml);
+                
+                if (claimsIdentities.Count >= 1)
+                {
+                    ClaimsIdentity claimsIdentity = claimsIdentities[0];
+                    IEnumerable<Claim> claims = claimsIdentity.Claims;
+                    userAttributes.ExtractFrom(claims);
+                    valid = claimsIdentity.IsAuthenticated;
+                }
+            }
+            return isValid;
+        }
 
 
         //TODO verify response
