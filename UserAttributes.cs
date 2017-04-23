@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Security.Claims;
 
 namespace PeterKressJunior.Saml 
@@ -12,22 +13,23 @@ namespace PeterKressJunior.Saml
         internal string FirstName { get; }
         internal string LastName { get; }
         internal string EmailAddress { get; }
-        internal string AuthnMethod { get; }
-        internal string AuthnInstant { get; }
+        internal string AuthenticationMethod { get; }
+        internal string AuthenticationInstant { get; }
 
         internal UserAttributes()
         {
-            //just for serialization
         }
 
         internal UserAttributes(string loginName, string firstName,
-                    string lastName, string emailAddress, string authnMethod)
+                    string lastName, string emailAddress, 
+                    string authenticationMethod, string authenticationInstant)
         {
             LoginName = loginName;
             FirstName = firstName;
             LastName = lastName;
             EmailAddress = emailAddress;
-            AuthnMethod = authnMethod;
+            AuthenticationMethod = authenticationMethod;
+            AuthenticationInstant = authenticationInstant;
         }
 
         /// <summary>
