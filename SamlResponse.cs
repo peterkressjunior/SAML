@@ -3,7 +3,7 @@ using System.Security.Cryptograhy.X509Certificates;
 using System.Collection.Generic;
 using System;
 
-namespace PeterKressJunior.SAML 
+namespace PeterKressJunior.Saml 
 {
     internal class SamlResponse
     {
