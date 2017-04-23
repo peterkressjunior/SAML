@@ -135,7 +135,42 @@ namespace PeterKressJunior.Saml
             return signedXml.CheckSignature(certificate, false);
         }
 
-        private
+        private ReadOnlyCollection<ClaimsIdentity> ValidateAssertion(string assertionXml)
+        {
+            ReadOnlyCollection<ClaimsIdentity> claimsIdentities = null;
+            Saml2SecurityToken securityToken;
+            StringReader reader = new StringReader(assertionXml);
+            
+            using (XmlReader xmlReader = XmlReader.Create(reader))
+            {
+                if (!xmlReader.ReadToFollowing("saml2:Assertion"))
+                {
+                    throw new SecurityTokenValidationException("SAML2 Assertion not found.");                  
+                }
+                
+                FixedSaml2SecurityTokenHandler tokenHandler = new FixedSaml2SecurityTokenHandler(Recipient);
+                SecurityTokenHandler[] tokenHandlers = new SecurityTokenHandlers[] { tokenHandler };
+                SecurityTokenHandlerCollection handlerCollection = new SecurityTokenHandlerCollection(tokenHandlers);
+                ConfigurationBasedIssuerNameRegistry issuerNameRegistry = new ConfigurationBasedIssuerNameRegistry();
+                
+                foreach (TrustedIssuer issuer in TrustedIssuers)
+                {
+                    issuerNameRegistry.AddTrustedIssuer(issuer.CertificateThumbprint, issuer.IssuerName);                   
+                }
+                handlerCollection.Configuration.IssuerNameRegistry = issuerNameRegistry;
+                
+                AudienceRestriction restriction = new AudienceRestriction(AudienceUriMode.Always);
+                
+                foreach (Uri allowedAudience in AllowedAudiences)
+                {
+                    restriction.AllowedAudiencesUris.Add(allowedAudience);
+                }
+                handlerCollection.Configuration.AudienceRestriction = restriction;
+                securityToken = (Saml2SecurityToken)handlerCollection.ReadToken(xmlReader.ReadSubtree());
+                claimsIdentities = handlerCollection.ValidateToken(securityToken);
+            }
+            return claimsIdentities;
+        }
         
         internal bool Validate(out UserAttibutes userAttributes)
         {
