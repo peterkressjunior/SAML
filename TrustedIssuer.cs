@@ -1,6 +1,6 @@
 using System;
 
-namespace PeterKressJunior.SAML 
+namespace PeterKressJunior.Saml  
 {
     /// <summary>
     /// Stores name and SSL certificate thumbprint 
