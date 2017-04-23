@@ -1,6 +1,6 @@
 using System.Security.Claims;
 
-namespace PeterKress.SAML 
+namespace PeterKressJunior.Saml 
 {
     /// <summary>
     /// Stores information from Security Claims.
